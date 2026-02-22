@@ -7,7 +7,15 @@ steps:
           image: "python:3.13"
     command:
       - pip install -e .
-      - python -c "import loremipsum; print(loremipsum.sentence(max_char=20))" | tee result.txt
+      - python -c "import loremipsum; print(loremipsum.sentence(max_char=20))" > result.txt
+    artifact_paths:
+      - "result.txt"
+
+  - label: ":memo: annotate sentence"
+    agents:
+      queue: "default"
+    command:
+      - buildkite-agent artifact download "result.txt" .
       - buildkite-agent annotate --style info --context sentence "$(cat result.txt)"
 
   - label: ":snake: paragraph (max_char=100)"
@@ -18,5 +26,13 @@ steps:
           image: "python:3.13"
     command:
       - pip install -e .
-      - python -c "import loremipsum; print(loremipsum.paragraph(max_char=100))" | tee paragraph.txt
+      - python -c "import loremipsum; print(loremipsum.paragraph(max_char=100))" > paragraph.txt
+    artifact_paths:
+      - "paragraph.txt"
+
+  - label: ":memo: annotate paragraph"
+    agents:
+      queue: "default"
+    command:
+      - buildkite-agent artifact download "paragraph.txt" .
       - buildkite-agent annotate --style success --context paragraph "$(cat paragraph.txt)"
