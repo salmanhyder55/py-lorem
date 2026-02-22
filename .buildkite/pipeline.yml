@@ -1,0 +1,22 @@
+steps:
+  - label: ":snake: sentence (max_char=20)"
+    agents:
+      queue: "default"
+    plugins:
+      - docker#v5.10.0:
+          image: "python:3.13"
+    command:
+      - pip install -e .
+      - python -c "import loremipsum; print(loremipsum.sentence(max_char=20))" | tee result.txt
+      - buildkite-agent annotate --style info --context sentence "$(cat result.txt)"
+
+  - label: ":snake: paragraph (max_char=100)"
+    agents:
+      queue: "default"
+    plugins:
+      - docker#v5.10.0:
+          image: "python:3.13"
+    command:
+      - pip install -e .
+      - python -c "import loremipsum; print(loremipsum.paragraph(max_char=100))" | tee paragraph.txt
+      - buildkite-agent annotate --style success --context paragraph "$(cat paragraph.txt)"
