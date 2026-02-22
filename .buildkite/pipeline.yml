@@ -1,5 +1,6 @@
 steps:
-  - label: ":snake: sentence (max_char=20)"
+  - key: "sentence"
+    label: ":snake: sentence (max_char=20)"
     agents:
       queue: "default"
     plugins:
@@ -11,14 +12,18 @@ steps:
     artifact_paths:
       - "result.txt"
 
-  - label: ":memo: annotate sentence"
+  - key: "annotate_sentence"
+    label: ":memo: annotate sentence"
+    depends_on: "sentence"
     agents:
       queue: "default"
     command:
       - buildkite-agent artifact download "result.txt" .
       - buildkite-agent annotate --style info --context sentence "$(cat result.txt)"
 
-  - label: ":snake: paragraph (max_char=100)"
+  - key: "paragraph"
+    label: ":snake: paragraph (max_char=100)"
+    depends_on: "sentence"   # ensures it runs only if sentence succeeded
     agents:
       queue: "default"
     plugins:
@@ -30,7 +35,9 @@ steps:
     artifact_paths:
       - "paragraph.txt"
 
-  - label: ":memo: annotate paragraph"
+  - key: "annotate_paragraph"
+    label: ":memo: annotate paragraph"
+    depends_on: "paragraph"
     agents:
       queue: "default"
     command:
